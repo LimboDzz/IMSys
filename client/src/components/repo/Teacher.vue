@@ -6,12 +6,12 @@
         tableData.filter(
           (data) =>
             !search ||
-            data.Course.toLowerCase().includes(search.toLowerCase()) ||
-            data.Type.toLowerCase().includes(search.toLowerCase()) ||
-            data.ExamNature.toLowerCase().includes(search.toLowerCase()) ||
-            data.PracticalHours.includes(search) ||
-            data.Cno.includes(search) ||
-            data.TeachingType.includes(search)
+            data.Course.toString().includes(search) ||
+            data.Type.toString().includes(search) ||
+            data.ExamNature.toString().includes(search) ||
+            data.PracticalHours.toString().includes(search) ||
+            data.Cno.toString().includes(search) ||
+            data.TeachingType.toString().includes(search)
         )
       "
       style="width: 80%; margin: 30px auto"
@@ -35,6 +35,14 @@
             placeholder="Type to search"
           />
         </template>
+        <template slot-scope="scope">
+          <el-button
+            type="plain"
+            size="medium"
+            @click="handleGrading(scope.$index, scope.row)"
+            >Grading</el-button
+          >
+        </template>
       </el-table-column>
     </el-table>
   </div>
@@ -54,13 +62,12 @@ export default {
     };
   },
   methods: {
-    handleWatch(index, row) {
-      // console.log(index, row);
+    handleGrading(index, row) {
       let mock = JSON.parse(JSON.stringify(row));
       this.$http
-        .post("http://localhost:4025/watch", mock)
+        .post("http://localhost:4025/gradingCourse", mock)
         .then((res) => {
-          console.log(res.data);
+          this.$router.push({ path: "Grading" });
         })
         .catch((err) => {
           console.error(err);

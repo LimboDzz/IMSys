@@ -5,6 +5,7 @@ import Repo from '@/components/repo/Repo'
 import Stu from '@/components/repo/Stu'
 import Teacher from '@/components/repo/Teacher'
 import Cart from '@/components/cart/Cart'
+import Grading from '@/components/cart/Grading'
 import Signup from '@/components/signup/Signup'
 // import Login from '@/components/login/Login'
 import loginStu from '@/components/login/loginStu'
@@ -42,6 +43,10 @@ export default new Router({
     {                               // cart
       path: '/cart',
       component: Cart
+    },
+        {                               // cart
+      path: '/Grading',
+      component: Grading
     },
     {                               // signup
       path: '/signup',

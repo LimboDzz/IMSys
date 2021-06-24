@@ -21,15 +21,20 @@ function msg(status, msg) {
     return { status, msg };
 }
 let currentUser = null;
+let currentCourse = null;
 const app = express();
 app.use(morgan('combined'))
     .use(bodyParser.json())
     .use(cors())
-
+    .post('/gradingCourse', (req, res) => {
+        console.log(req.body);
+        currentCourse = req.body;
+        res.send(msg(true, "setGradingCourse"));
+    })
     .post('/stu/delete', (req, res) => {
-        db.query(`delete studentcourse where Cno='${req.body.Cno}')`, (err) => {
+        db.query(`delete from studentcourse where Cno = '${req.body.Cno}'`, (err) => {
             if (err) res.send(msg(false, '[DELETE ERROR]: ' + err.message));
-            console.log("!!!!")
+            else res.send(msg(true, `Course ${req.body.Cno} deleted.`));
         });
     })
     .post('/stu/login', (req, res) => {
@@ -62,8 +67,20 @@ app.use(morgan('combined'))
             }
         });
     })
+    .post('/teacher/confirm', (req, res) => {
+        db.query(`update score set ExamRes = '${req.body.score}' where Cno = '${req.body.Cno}}'`, function (err) {
+            if (err) res.send(msg(false, '[SELECT ERROR]: ' + err.message));
+            else {
+                res.send(msg(true, "OK"));
+            }
+        });
+    })
     .get('/user/loginUser', (req, res) => {
         res.send(currentUser);
+    })
+    .get('/user/logout', (req, res) => {
+        res.send(msg(true,"Logout."))
+        currentUser=null;
     })
     .get('/stu/courseList', (req, res) => {
         db.query(`select * from stuCourse`, (err, result) => {
@@ -76,10 +93,10 @@ app.use(morgan('combined'))
     })
     .post('/stu/attend', (req, res) => {
         db.query(`insert into studentcourse(Sno,Cno) values('${currentUser.Sno}','${req.body.Cno}')`, (err, result) => {
-            if (err) res.send(msg(false, '[INSERT ERROR]: ' + err.message));
+            if (err && err.toString().includes("Duplicate")) res.send(msg(false, 'Already added. Check your list.'));
             else if (result.length == 0) res.send(msg(false, 'No course on plan.'));
             else {
-                res.send(result);
+                res.send(msg(true, 'Attend Successfully'));
             }
         });
     })
@@ -92,8 +109,23 @@ app.use(morgan('combined'))
             }
         });
     })
+    .get('/gradeCurrentCourse', (req, res) => {
+        if (currentCourse == null) res.send(msg(false, "noCurrentCourse"));
+        else {
+            
+
+            db.query(`select * from gradingcourse where Cno='${currentCourse.Cno}' and Tno='${currentCourse.Tno}'`, (err, result) => {
+            if (err) res.send(msg(false, '[SELECT ERROR]: ' + err.message));
+            else if (result.length == 0) res.send(msg(false, 'No course for grading.'));
+            else {
+                res.send(result);
+            }
+        });
+
+        }
+    })
     .get('/teacher/courseList',(req, res)=> {
-                db.query(`select * from teachercourse`, (err, result) => {
+                db.query(`select * from teachercourse where Tno='${currentUser.Tno}'`, (err, result) => {
             if (err) res.send(msg(false, '[SELECT ERROR]: ' + err.message));
             else if (result.length == 0) res.send(msg(false, 'No course on plan.'));
             else {

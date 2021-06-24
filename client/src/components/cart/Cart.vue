@@ -9,14 +9,14 @@
       <el-table-column label="Teacher" prop="Teacher"> </el-table-column>
       <el-table-column label="Title" prop="Title"> </el-table-column>
       <el-table-column align="center" width="200" label="Operation">
-        <!-- <template slot-scope="scope">
+        <template slot-scope="scope">
           <el-button
             size="medium"
             type="danger"
             @click="handleDelete(scope.$index, scope.row)"
             >Delete</el-button
           >
-        </template> -->
+        </template>
       </el-table-column>
     </el-table>
   </div>
@@ -35,19 +35,21 @@ export default {
     };
   },
   methods: {
-    // handleDelete(index, row) {
-    //   // console.log(row);
-    //   let mock = JSON.parse(JSON.stringify(row));
-    //   console.log(mock);
-    //   this.$http
-    //     .post("http://localhost:4025/stu/delete", mock)
-    //     .then((res) => {
-    //       this.login();
-    //     })
-    //     .catch((err) => {
-    //       console.error(err);
-    //     });
-    // },
+    handleDelete(index, row) {
+      let mock = JSON.parse(JSON.stringify(row));
+      this.$http
+        .post("http://localhost:4025/stu/delete", mock)
+        .then((res) => {
+          this.$message({
+            message: res.data.msg,
+            type: "message",
+          });
+          this.login();
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
     // getSummaries(param) {
     //   const { columns, data } = param;
     //   const sums = [];
@@ -97,18 +99,18 @@ export default {
         .catch((err) => {
           console.error(err);
         });
-      this.$http
-        .get("http://localhost:4025/user/loginUser")
-        .then((res) => {
-          this.account = res.data;
-          if (this.account == null) {
-            console.log("no account back");
-            this.$router.push({ path: "/" });
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      // this.$http
+      //   .get("http://localhost:4025/user/loginUser")
+      //   .then((res) => {
+      //     this.account = res.data;
+      //     if (this.account == null) {
+      //       console.log("no account back");
+      //       this.$router.push({ path: "/" });
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.error(err);
+      //   });
     },
   },
   created() {

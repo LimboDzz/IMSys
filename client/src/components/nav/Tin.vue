@@ -12,7 +12,7 @@
       <el-menu-item index="/Teacher">IMSYS.jlu <u>Mock</u></el-menu-item>
       <el-menu-item index="/admin" disabled> Admin</el-menu-item>
       <el-menu-item index="/Tcart"> Profile</el-menu-item>
-      <el-menu-item class="ir" @click="logout">
+      <el-menu-item index="/" class="ir" @click="logout">
         {{ account.Tname }} Logout</el-menu-item
       >
     </el-menu>
@@ -49,10 +49,11 @@ export default {
       this.$http
         .get("http://localhost:4025/user/logout")
         .then((res) => {
-          this.$router.push({ path: "/" });
-          this.$http
-            .get("http://localhost:4025/cart/deleteAll")
-            .then((res) => {});
+          // this.$router.push({ path: "/" });
+          this.$message({
+            message: res.data.msg,
+            type: "message",
+          });
         })
         .catch((err) => {
           console.error(err);

@@ -3,16 +3,18 @@
     <Nav></Nav>
     <el-table
       :data="
-        tableData.filter(
-          (data) =>
+        tableData.filter((data) => {
+          return (
             !search ||
-            data.Course.toLowerCase().includes(search.toLowerCase()) ||
-            data.Credit.includes(search) ||
-            data.College.toLowerCase().includes(search.toLowerCase()) ||
-            data.Teacher.toLowerCase().includes(search.toLowerCase()) ||
-            data.Ttitle.toLowerCase().includes(search.toLowerCase()) ||
-            data.Type.toLowerCase().includes(search.toLowerCase())
-        )
+            data.Course.toString().includes(search) ||
+            data.Credit.toString().includes(search) ||
+            data.College.toString().includes(search) ||
+            data.Teacher.toString().includes(search) ||
+            data.Ttitle.toString().includes(search) ||
+            data.Cno.toString().includes(search) ||
+            data.Type.toString().includes(search)
+          );
+        })
       "
       style="width: 80%; margin: 30px auto"
     >
@@ -64,7 +66,16 @@ export default {
       this.$http
         .post("http://localhost:4025/stu/attend", mock)
         .then((res) => {
-          console.log(res.data);
+          if (res.data.status)
+            this.$message({
+              message: res.data.msg,
+              type: "success",
+            });
+          else
+            this.$message({
+              message: res.data.msg,
+              type: "danger",
+            });
         })
         .catch((err) => {
           console.error(err);
@@ -78,8 +89,12 @@ export default {
     this.$http
       .get("http://localhost:4025/stu/courseList")
       .then((res) => {
-        console.log(res);
         this.tableData = res.data;
+        this.tableData.forEach((data) => {
+          data = JSON.parse(JSON.stringify(data));
+          console.log(data);
+        });
+        console.log(this.tableData);
       })
       .catch((err) => {
         console.error(err);
